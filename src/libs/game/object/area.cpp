@@ -683,6 +683,7 @@ bool Area::moveCreature(const std::shared_ptr<Creature> &creature, const glm::ve
         // Try moving along the surface
         glm::vec2 right(glm::normalize(glm::vec2(glm::cross(up, collision.normal))));
         glm::vec2 newDir(glm::normalize(right * glm::dot(dir, right)));
+        speedDt = speed * dt * glm::dot(dir, newDir);
 
         dest = origin;
         dest.x += newDir.x * speedDt;
