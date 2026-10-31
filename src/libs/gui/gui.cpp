@@ -240,6 +240,7 @@ bool GUI::handle(const input::Event &event) {
 
     case input::EventType::MouseMotion: {
         updateSelection(event.motion.x, event.motion.y);
+        updateFocus(event.motion.x, event.motion.y);
         if (_selection) {
             auto ctrlCoords = controlCoordinates(_selection->get(), event.motion.x, event.motion.y);
             _selection->get().handleMouseMotion(ctrlCoords.x, ctrlCoords.y);
@@ -315,6 +316,28 @@ void GUI::updateSelection(int screenX, int screenY) {
     if (control) {
         control->get().setSelected(true);
         onSelectionChanged(control->get().tag(), true);
+    }
+}
+
+void GUI::updateFocus(int screenX, int screenY) {
+    auto control = findControlAt(
+        screenX, screenY,
+        [](const auto &control) { return control.isFocusable(); });
+    if ((!_focus && !control) ||
+        (_focus && control && _focus->get().id() == control->get().id())) {
+        return;
+    }
+    if (control) {
+        // Unlike selection, focus is only withdrawn from previous control when a new control has taken it
+        if (_focus) {
+            _focus->get().setFocused(false);
+            //onSelectionChanged(_focus->get().tag(), false);
+        }
+        _focus = control;
+        if (control) {
+            control->get().setFocused(true);
+            //onSelectionChanged(control->get().tag(), true);
+        }
     }
 }
 

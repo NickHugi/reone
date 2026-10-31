@@ -324,6 +324,7 @@ private:
 
     std::optional<std::reference_wrapper<Control>> _rootControl;
     std::optional<std::reference_wrapper<Control>> _selection;
+    std::optional<std::reference_wrapper<Control>> _focus;
 
     // END Controls
 
@@ -366,6 +367,7 @@ private:
     glm::ivec2 controlCoordinates(const Control &control, int screenX, int screenY) const;
     float scaledFactor() const;
     void updateSelection(int screenX, int screenY);
+    void updateFocus(int screenX, int screenY);
 
     void renderBackground(scene::IRenderPass &pass);
 
