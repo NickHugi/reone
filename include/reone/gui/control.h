@@ -133,6 +133,8 @@ public:
     bool isSelected() const { return _selected; }
     bool isDisabled() const { return _disabled; }
     bool isHilightOverBorder() const { return _hilightOverBorder; }
+    bool isFocusable() const { return _focusable; }
+    bool isFocused() const { return _focused; }
 
     int id() const { return _id; }
     int padding() const { return _padding; }
@@ -172,6 +174,7 @@ public:
     virtual void setExtentHeight(int height);
     void setExtentTop(int top);
     virtual void setSelected(bool selected);
+    void setFocused(bool focused);
     void setSelectable(bool selectable);
     void setHeight(int height);
     void setHilight(Border hilight);
@@ -259,6 +262,8 @@ protected:
     bool _selected {false};
     bool _hilightOverBorder {false};
     bool _selectable {false};
+    bool _focusable {false};
+    bool _focused {false};
     bool _tintBorderFill {false};
     float _borderFillOpacity {1.0f};
     bool _sharpenBorderFillAlpha {false};

@@ -88,10 +88,10 @@ struct GUI_CONTROLS_PROTOITEM : public GUI_BASECONTROL {
 };
 
 struct GUI_CONTROLS_MOVETO {
-    int DOWN {0};
-    int LEFT {0};
-    int RIGHT {0};
-    int UP {0};
+    int DOWN {-1};
+    int LEFT {-1};
+    int RIGHT {-1};
+    int UP {-1};
 };
 
 struct GUI_CONTROLS : public GUI_BASECONTROL {

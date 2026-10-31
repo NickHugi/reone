@@ -87,6 +87,7 @@ void Control::load(const resource::generated::GUI_BASECONTROL &gui, bool protoIt
         auto &controlStruct = *static_cast<const resource::generated::GUI_CONTROLS *>(&gui);
         _id = controlStruct.ID;
         _padding = controlStruct.PADDING;
+        _focusable = controlStruct.MOVETO.UP != -1 || controlStruct.MOVETO.DOWN != -1 || controlStruct.MOVETO.LEFT != -1 || controlStruct.MOVETO.RIGHT != -1;
         if (controlStruct.TEXT) {
             loadText(*controlStruct.TEXT);
         }
