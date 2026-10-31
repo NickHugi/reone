@@ -85,6 +85,7 @@ void Control::load(const resource::generated::GUI_BASECONTROL &gui, bool protoIt
         }
     } else {
         auto &controlStruct = *static_cast<const resource::generated::GUI_CONTROLS *>(&gui);
+        loadMoveTo(controlStruct.MOVETO);
         _id = controlStruct.ID;
         _padding = controlStruct.PADDING;
         _focusable = controlStruct.MOVETO.UP != -1 || controlStruct.MOVETO.DOWN != -1 || controlStruct.MOVETO.LEFT != -1 || controlStruct.MOVETO.RIGHT != -1;
@@ -158,6 +159,10 @@ void Control::loadHilight(const resource::generated::GUI_BORDER &gui) {
     _authoredHilightDimension = gui.DIMENSION;
 }
 
+void Control::loadMoveTo(const resource::generated::GUI_CONTROLS_MOVETO& moveto) {
+    _moveTo =
+}
+
 void Control::updateTransform() {
     _transform = glm::translate(glm::mat4(1.0f), glm::vec3(_extent.left, _extent.top, 0.0f));
     _transform = glm::scale(_transform, glm::vec3(_extent.width, _extent.height, 1.0f));
@@ -208,10 +213,10 @@ void Control::render(const glm::ivec2 &screenSize,
     const auto &hilight = shownHilight();
     std::array<const Border *, 2> borderStorage;
     size_t borderCount = 0;
-    if (border && (!_selected || _hilightOverBorder || !hilight)) {
+    if (border && ((!_selected && !_focused) || _hilightOverBorder || !hilight)) {
         borderStorage[borderCount++] = border.get();
     }
-    if (_selected && hilight) {
+    if ((_selected || _focused) && hilight) {
         borderStorage[borderCount++] = hilight.get();
     }
     renderControlLayers(
@@ -407,7 +412,7 @@ const glm::vec3 &Control::getBorderColor() const {
         return _borderColorOverride;
     }
     const auto &hilight = shownHilight();
-    return (_selected && hilight) ? hilight->color : shownBorder()->color;
+    return ((_selected || _focused) && hilight) ? hilight->color : shownBorder()->color;
 }
 
 void Control::renderText(const std::vector<std::string> &lines,
@@ -420,7 +425,7 @@ void Control::renderText(const std::vector<std::string> &lines,
 
     glm::vec3 linePosition(0.0f);
     const auto &hilight = shownHilight();
-    glm::vec4 color {(_selected && hilight) ? hilight->color : _text.color, _text.opacity};
+    glm::vec4 color {((_selected || _focused) && hilight) ? hilight->color : _text.color, _text.opacity};
 
     for (auto &line : lines) {
         linePosition.x = static_cast<float>(position.x + offset.x);
@@ -567,6 +572,17 @@ void Control::setSelected(bool setSelected) {
     if (_onSelectedChanged) {
         _onSelectedChanged(setSelected);
     }
+}
+
+void Control::setFocused(bool setFocused) {
+    if (_focused == setFocused)
+        return;
+
+    _focused = setFocused;
+
+    //if (_onSelectedChanged) {
+    //    _onSelectedChanged(setSelected);
+    //}
 }
 
 void Control::setExtent(Extent extent) {
