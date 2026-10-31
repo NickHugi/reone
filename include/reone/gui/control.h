@@ -74,6 +74,16 @@ public:
         CenterBottom = 0x1000
     };
 
+    struct MoveTo {
+        int down {-1};
+        int left {-1};
+        int right {-1};
+        int up {-1};
+
+        MoveTo() = default;
+        MoveTo(int down, int left, int right, int up);
+    };
+
     struct Extent {
         int left {0};
         int top {0};
@@ -270,6 +280,7 @@ protected:
     int _authoredHilightDimension {0};
     float _scale {1.0f};
     Extent _extent;
+    MoveTo _moveTo;
     std::shared_ptr<Border> _border;
     std::shared_ptr<Border> _hilight;
     Text _text;
@@ -361,6 +372,7 @@ private:
     void loadBorder(const resource::generated::GUI_BORDER &gui);
     void loadText(const resource::generated::GUI_TEXT &gui);
     void loadHilight(const resource::generated::GUI_BORDER &gui);
+    void loadMoveTo(const resource::generated::GUI_CONTROLS_MOVETO &gui);
 
     void getTextPosition(glm::ivec2 &position, int lineCount, const glm::ivec2 &size, graphics::TextGravity &gravity) const;
 };
