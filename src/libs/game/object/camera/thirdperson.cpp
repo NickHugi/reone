@@ -124,15 +124,50 @@ float ThirdPersonCamera::projectionFovy() const {
 }
 
 bool ThirdPersonCamera::handle(const input::Event &event) {
+    auto &keybinds = _game.options().game.activeKeybinds();
+
+    if (keybinds.mouseLookHeld.pressed(event)) {
+        _game.setMouseLookHeld(true);
+        return true;
+    }
+    if (keybinds.mouseLookHeld.released(event)) {
+        _game.setMouseLookHeld(false);
+        return true;
+    }
+
+    // TSL's turn keys end the party-target mode.
+    if (_game.isTSL() && (keybinds.cameraRotateLeft.pressed(event) || keybinds.cameraRotateRight.pressed(event))) {
+        _game.cancelPartyItemTarget();
+        return true;
+    }
+
+    if (keybinds.cameraRotateLeft.pressed(event)) {
+        if (!keybinds.cameraRotateLeft.repeat(event)) {
+            _rotateCCW = true;
+            _rotateCW = false;
+            _rotationSpeed = kMinRotationSpeed;
+            return true;
+        }
+    }
+    if (keybinds.cameraRotateLeft.released(event)) {
+        _rotateCCW = false;
+        return true;
+    }
+
+    if (keybinds.cameraRotateRight.pressed(event)) {
+        if (!keybinds.cameraRotateRight.repeat(event)) {
+            _rotateCCW = false;
+            _rotateCW = true;
+            _rotationSpeed = kMinRotationSpeed;
+            return true;
+        }
+    }
+    if (keybinds.cameraRotateRight.released(event)) {
+        _rotateCW = false;
+        return true;
+    }
+
     switch (event.type) {
-    case input::EventType::KeyDown:
-        return handleKeyDown(event.key);
-    case input::EventType::KeyUp:
-        return handleKeyUp(event.key);
-    case input::EventType::MouseButtonDown:
-        return handleMouseButtonDown(event.button);
-    case input::EventType::MouseButtonUp:
-        return handleMouseButtonUp(event.button);
     case input::EventType::MouseMotion:
         return handleMouseMotion(event.motion);
     case input::EventType::MouseWheel:
@@ -140,18 +175,6 @@ bool ThirdPersonCamera::handle(const input::Event &event) {
     default:
         return false;
     }
-}
-
-bool ThirdPersonCamera::handleGamepadButtonDown(const input::GamepadButtonEvent &event) {
-    return false;
-}
-
-bool ThirdPersonCamera::handleGamepadButtonUp(const input::GamepadButtonEvent &event) {
-    return false;
-}
-
-bool ThirdPersonCamera::handleGamepadAxisMotion(const input::GamepadAxisMotionEvent &event) {
-    return false;
 }
 
 bool ThirdPersonCamera::handleMouseWheel(const input::MouseWheelEvent &event) {
@@ -182,55 +205,6 @@ bool ThirdPersonCamera::updateZoom(float dt) {
     return true;
 }
 
-// The turn keys work whether or not the mouse turns the camera. Either Ctrl
-// key, like the right button, turns the camera with the mouse while held.
-bool ThirdPersonCamera::handleKeyDown(const input::KeyEvent &event) {
-    auto &keybinds = _game.options().game.activeKeybinds();
-
-    // TSL's turn keys end the party-target mode.
-    if (_game.isTSL() &&
-        (keybinds.cameraRotateLeft.check(event.code) || keybinds.cameraRotateRight.check(event.code))) {
-        _game.cancelPartyItemTarget();
-    }
-    if (keybinds.cameraRotateLeft.check(event.code)) {
-        if (!event.repeat) {
-            _rotateCCW = true;
-            _rotateCW = false;
-            _rotationSpeed = kMinRotationSpeed;
-            return true;
-        }
-    } else if (keybinds.cameraRotateRight.check(event.code)) {
-        if (!event.repeat) {
-            _rotateCCW = false;
-            _rotateCW = true;
-            _rotationSpeed = kMinRotationSpeed;
-            return true;
-        }
-    } else if (event.code == input::KeyCode::LeftControl || event.code == input::KeyCode::RightControl) {
-        _game.setMouseLookHeld(true);
-        return true;
-    }
-
-    return false;
-}
-
-bool ThirdPersonCamera::handleKeyUp(const input::KeyEvent &event) {
-    auto &keybinds = _game.options().game.activeKeybinds();
-
-    if (keybinds.cameraRotateLeft.check(event.code)) {
-        _rotateCCW = false;
-        return true;
-    } else if (keybinds.cameraRotateRight.check(event.code)) {
-        _rotateCW = false;
-        return true;
-    } else if (event.code == input::KeyCode::LeftControl || event.code == input::KeyCode::RightControl) {
-        _game.setMouseLookHeld(false);
-        return true;
-    }
-
-    return false;
-}
-
 bool ThirdPersonCamera::handleMouseMotion(const input::MouseMotionEvent &event) {
     const bool mouseLook = isMouseLookMode();
     if (mouseLook && event.xrel != 0) {
@@ -241,29 +215,6 @@ bool ThirdPersonCamera::handleMouseMotion(const input::MouseMotionEvent &event) 
         _mouseTurn += static_cast<float>(event.xrel);
     }
     _mouseRise += static_cast<float>(event.yrel);
-    return false;
-}
-
-// The right button and the Ctrl keys share one hold: any press starts it and
-// any release ends it. KotOR's right button holds it on every screen, which
-// Game::handle sees to.
-bool ThirdPersonCamera::handleMouseButtonDown(const input::MouseButtonEvent &event) {
-    if (event.button == input::MouseButton::Right) {
-        if (_game.isTSL()) {
-            _game.setMouseLookHeld(true);
-        }
-        return true;
-    }
-    return false;
-}
-
-bool ThirdPersonCamera::handleMouseButtonUp(const input::MouseButtonEvent &event) {
-    if (event.button == input::MouseButton::Right) {
-        if (_game.isTSL()) {
-            _game.setMouseLookHeld(false);
-        }
-        return true;
-    }
     return false;
 }
 

@@ -44,9 +44,74 @@ struct MenuPresentation {
 struct Keybind {
     input::KeyCode keyCode;
     input::KeyCode keyCodeAlt;
+    input::GamepadAxis gamepadAxis;
+    input::GamepadButton gamepadButton;
+    input::MouseButton mouseButton;
 
     bool check(input::KeyCode keyCode) {
         return this->keyCode == keyCode || keyCodeAlt == keyCode;
+    }
+
+    bool pressed(const input::Event &event) {
+        switch (event.type) {
+        case input::EventType::KeyDown:
+            return event.key.code == keyCode || event.key.code == keyCodeAlt;
+        case input::EventType::GamepadButtonDown:
+            return event.gamepadButton.button == gamepadButton;
+        case input::EventType::GamepadAxisMotion:
+            return event.gamepadAxisMotion.axis == gamepadAxis && event.gamepadAxisMotion.value >= 0.1;
+        case input::EventType::MouseButtonDown:
+            return event.button.button == mouseButton;
+        default:
+            return false;
+        };
+    }
+
+    bool released(const input::Event &event) {
+        switch (event.type) {
+        case input::EventType::KeyUp:
+            return event.key.code == keyCode;
+        case input::EventType::GamepadButtonUp:
+            return event.gamepadButton.button == gamepadButton;
+        case input::EventType::GamepadAxisMotion:
+            return event.gamepadAxisMotion.axis == gamepadAxis && event.gamepadAxisMotion.value <= 0.1;
+        case input::EventType::MouseButtonUp:
+            return event.button.button == mouseButton;
+        default:
+            return false;
+        };
+    }
+
+    bool repeat(const input::Event &event) {
+        switch (event.type) {
+        case input::EventType::KeyUp:
+            return event.key.repeat;
+        case input::EventType::GamepadButtonUp:
+            return false;
+        case input::EventType::GamepadAxisMotion:
+            return false;
+        case input::EventType::MouseButtonUp:
+            return false;
+        default:
+            return false;
+        };
+    }
+
+    float pressure(const input::Event &event) {
+        switch (event.type) {
+        case input::EventType::KeyUp:
+        case input::EventType::GamepadButtonUp:
+        case input::EventType::MouseButtonUp:
+            return 1.0f;
+        case input::EventType::KeyDown:
+        case input::EventType::GamepadButtonDown:
+        case input::EventType::MouseButtonDown:
+            return 0.0f;
+        case input::EventType::GamepadAxisMotion:
+            return event.gamepadAxisMotion.value;
+        default:
+            return false;
+        }
     }
 };
 struct KeybindOptions {
@@ -64,6 +129,7 @@ struct KeybindOptions {
     Keybind clearOneAction {input::KeyCode::Y};
     Keybind cancelCombat {input::KeyCode::F};
     Keybind defaultAction {input::KeyCode::R};
+    Keybind mouseLookHeld {input::KeyCode::LeftControl, input::KeyCode::RightControl};
     Keybind pause {input::KeyCode::Space, input::KeyCode::Pause};
 
     static KeybindOptions load(const std::filesystem::path &path, const int index);

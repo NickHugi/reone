@@ -224,14 +224,7 @@ private:
     float integrateCombatTurn(float input, float dt);
     float projectionFovy() const override;
 
-    bool handleGamepadButtonDown(const input::GamepadButtonEvent &event);
-    bool handleGamepadButtonUp(const input::GamepadButtonEvent &event);
-    bool handleGamepadAxisMotion(const input::GamepadAxisMotionEvent &event);
-    bool handleKeyDown(const input::KeyEvent &event);
-    bool handleKeyUp(const input::KeyEvent &event);
     bool handleMouseMotion(const input::MouseMotionEvent &event);
-    bool handleMouseButtonDown(const input::MouseButtonEvent &event);
-    bool handleMouseButtonUp(const input::MouseButtonEvent &event);
     /** The wheel moves the follow camera in or out, outside combat. */
     bool handleMouseWheel(const input::MouseWheelEvent &event);
     /** Eases the follow camera's distance scale by \p dt seconds; whether it changed. */
