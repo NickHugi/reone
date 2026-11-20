@@ -61,6 +61,11 @@ enum class GamepadAxis {
     RightTrigger,
 };
 
+enum class GamepadAxisDirection {
+    Positive,
+    Negative,
+};
+
 struct GamepadButtonEvent {
     uint32_t which;
     bool pressed;
@@ -303,6 +308,11 @@ struct TextInputEvent {
     }
 };
 
+enum class MouseWheelAxis {
+    X,
+    Y
+};
+
 enum class MouseWheelDirection {
     Normal,
     Flipped
@@ -414,6 +424,70 @@ struct Event {
         Event event {EventType::TextInput};
         event.text = std::move(text);
         return event;
+    }
+};
+
+
+enum class KeybindType {
+    KeyCode,
+    GamepadButton,
+    GamepadAxisMotion,
+    MouseButton,
+    MouseMotion,
+    MouseWheel
+};
+
+struct KeybindKeyCode {
+    KeyCode keyCode;
+
+    KeybindKeyCode(KeyCode keyCode) : keyCode(keyCode) {
+    }
+};
+struct KeybindGamepadButton {
+    GamepadButton button;
+
+    KeybindGamepadButton(GamepadButton button) : button(button) {
+    }
+};
+struct KeybindGamepadAxisMotion {
+    GamepadAxis axis;
+    GamepadAxisDirection direction;
+};
+struct KeybindMouseButton {
+    MouseButton mouseButton;
+};
+struct KeybindMouseMotion {
+};
+struct KeybindMouseWheel {
+    MouseWheelAxis axis;
+    MouseWheelDirection direction;
+};
+
+struct Keybind {
+    KeybindType type;
+    union {
+        KeybindKeyCode keyCode;
+        KeybindGamepadButton gamepadButton;
+        KeybindGamepadAxisMotion gamepadAxisMotion;
+        KeybindMouseButton mouseButton;
+        KeybindMouseMotion mouseMotion;
+        KeybindMouseWheel mouseWheel;
+    };
+
+    Keybind(KeybindType type) :
+        type(type) {
+    }
+
+    inline static Keybind newKeyCode(KeyCode keyCode) {
+        Keybind keybind {KeybindType::KeyCode};
+        keybind.keyCode = KeybindKeyCode(keyCode);
+        return keybind;
+    }
+
+    inline static Keybind newGamepadButtonDown(GamepadButton gamepadButton) {
+        Keybind keybind {KeybindType::GamepadButton};
+        keybind.gamepadButton = KeybindGamepadButton(gamepadButton);
+        return keybind;
     }
 };
 

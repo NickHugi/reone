@@ -42,18 +42,19 @@ struct MenuPresentation {
 };
 
 struct Keybind {
-    input::KeyCode keyCode;
-    input::KeyCode keyCodeAlt;
-    input::GamepadAxis gamepadAxis;
-    input::GamepadButton gamepadButton;
-    input::MouseButton mouseButton;
+    input::Keybind keybind;
+
+    Keybind(input::Keybind keybind) : keybind(keybind) {
+    }
 
     bool check(input::KeyCode keyCode) {
-        return this->keyCode == keyCode || keyCodeAlt == keyCode;
+        return false;
+        //return this->keyCode == keyCode || keyCodeAlt == keyCode;
     }
 
     bool pressed(const input::Event &event) {
-        switch (event.type) {
+        return false;
+        /*switch (event.type) {
         case input::EventType::KeyDown:
             return event.key.code == keyCode || event.key.code == keyCodeAlt;
         case input::EventType::GamepadButtonDown:
@@ -64,11 +65,12 @@ struct Keybind {
             return event.button.button == mouseButton;
         default:
             return false;
-        };
+        };*/
     }
 
     bool released(const input::Event &event) {
-        switch (event.type) {
+        return false;
+       /* switch (event.type) {
         case input::EventType::KeyUp:
             return event.key.code == keyCode;
         case input::EventType::GamepadButtonUp:
@@ -79,11 +81,12 @@ struct Keybind {
             return event.button.button == mouseButton;
         default:
             return false;
-        };
+        };*/
     }
 
     bool repeat(const input::Event &event) {
-        switch (event.type) {
+        return false;
+        /*switch (event.type) {
         case input::EventType::KeyUp:
             return event.key.repeat;
         case input::EventType::GamepadButtonUp:
@@ -94,11 +97,12 @@ struct Keybind {
             return false;
         default:
             return false;
-        };
+        };*/
     }
 
     float pressure(const input::Event &event) {
-        switch (event.type) {
+        return 0;
+        /*switch (event.type) {
         case input::EventType::KeyUp:
         case input::EventType::GamepadButtonUp:
         case input::EventType::MouseButtonUp:
@@ -111,26 +115,27 @@ struct Keybind {
             return event.gamepadAxisMotion.value;
         default:
             return false;
-        }
+        }*/
     }
 };
 struct KeybindOptions {
-    Keybind moveForward {input::KeyCode::W};
-    Keybind moveBackward {input::KeyCode::S};
-    Keybind moveLeft {input::KeyCode::Z};
-    Keybind moveRight {input::KeyCode::C};
-    Keybind flourish {input::KeyCode::X};
-    Keybind walk {input::KeyCode::B};
-    Keybind cameraRotateLeft {input::KeyCode::A};
-    Keybind cameraRotateRight {input::KeyCode::D};
-    Keybind cycleTargetLeft {input::KeyCode::Q};
-    Keybind cycleTargetRight {input::KeyCode::E};
-    Keybind toggleStealth {input::KeyCode::G};
-    Keybind clearOneAction {input::KeyCode::Y};
-    Keybind cancelCombat {input::KeyCode::F};
-    Keybind defaultAction {input::KeyCode::R};
-    Keybind mouseLookHeld {input::KeyCode::LeftControl, input::KeyCode::RightControl};
-    Keybind pause {input::KeyCode::Space, input::KeyCode::Pause};
+    Keybind moveForward {input::Keybind::newKeyCode(input::KeyCode::W)};
+    Keybind moveBackward {input::Keybind::newKeyCode(input::KeyCode::S)};
+    Keybind moveLeft {input::Keybind::newKeyCode(input::KeyCode::Z)};
+    Keybind moveRight {input::Keybind::newKeyCode(input::KeyCode::C)};
+    Keybind flourish {input::Keybind::newKeyCode(input::KeyCode::X)};
+    Keybind walk {input::Keybind::newKeyCode(input::KeyCode::B)};
+    Keybind cameraRotateLeft {input::Keybind::newKeyCode(input::KeyCode::A)};
+    Keybind cameraRotateRight {input::Keybind::newKeyCode(input::KeyCode::D)};
+    Keybind cycleTargetLeft {input::Keybind::newKeyCode(input::KeyCode::Q)};
+    Keybind cycleTargetRight {input::Keybind::newKeyCode(input::KeyCode::E)};
+    Keybind toggleStealth {input::Keybind::newKeyCode(input::KeyCode::G)};
+    Keybind clearOneAction {input::Keybind::newKeyCode(input::KeyCode::Y)};
+    Keybind cancelCombat {input::Keybind::newKeyCode(input::KeyCode::F)};
+    Keybind defaultAction {input::Keybind::newKeyCode(input::KeyCode::R)};
+    Keybind mouseLookHeld {input::Keybind::newKeyCode(input::KeyCode::LeftControl)};
+    Keybind pause {input::Keybind::newKeyCode(input::KeyCode::Space)};
+    Keybind zoomIn {input::Keybind::newKeyCode(input::KeyCode::Plus)};
 
     static KeybindOptions load(const std::filesystem::path &path, const int index);
     void save(const std::filesystem::path &path, const int index) const;

@@ -167,6 +167,10 @@ bool ThirdPersonCamera::handle(const input::Event &event) {
         return true;
     }
 
+    // if (keybinds.zoomIn.axis(event)) {
+    //  notches = keybinds.zoomIn.pressure(event)
+
+
     switch (event.type) {
     case input::EventType::MouseMotion:
         return handleMouseMotion(event.motion);
